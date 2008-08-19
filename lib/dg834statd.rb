@@ -5,7 +5,6 @@ require 'net/telnet'
 require 'logger'
 
 require 'daemons'
-require 'json'
 
 DAEMON_ROOT = File.expand_path( File.join( File.dirname( __FILE__ ), '..' ) )
 
@@ -36,8 +35,7 @@ module DG834
     def initialize( router_ip, sleep_interval )
       @router_ip = router_ip
       @sleep_interval = sleep_interval
-      @json_stats = File.open( File.join( DAEMON_ROOT, 'log', 'dg834.json' ), 'w' )
-      @csv_stats = File.open( File.join( DAEMON_ROOT, 'log', 'dg834.csv' ), 'w' )
+      @csv_stats = File.open( File.join( DAEMON_ROOT, 'log', 'dg834.csv' ), 'a' )
       @logger = Logger.new( File.join( DAEMON_ROOT, 'log', 'dg834statds.log' ) )
       @should_exit = false
       
@@ -100,8 +98,6 @@ module DG834
     end
     
     def report_stats( stats )
-      @json_stats.write( stats.to_json )
-      @json_stats.flush
       @csv_stats.puts( "#{stats[:when]},#{stats[:ds_conn_rate]},#{stats[:ds_line_attenutation]},#{stats[:ds_margin]},#{stats[:ds_payload]},#{stats[:us_conn_rate]},#{stats[:us_line_attenutation]},#{stats[:us_margin]},#{stats[:us_payload]}" )
       @csv_stats.flush
     end
